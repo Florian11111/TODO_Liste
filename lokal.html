@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Anfrage</title>
+</head>
+<body>
+    <h1>API Anfrage</h1>
+    <button onclick="sendRequest()">API Anfrage senden</button>
+    <p id="response"></p>
+
+    <script>
+        function sendRequest() {
+            // Deine API-URL hier einsetzen
+            var apiUrl = 'http://127.0.0.1:5000/api/protected';
+
+            fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer sicher123'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Zeige die empfangene Nachricht in einem Absatz auf der Seite an
+                document.getElementById('response').innerText = data.message;
+            })
+            .catch(error => {
+                // Zeige eine Fehlermeldung, wenn die Anfrage fehlschlägt
+                document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
+            });
+        }
+    </script>
+</body>
+</html>
