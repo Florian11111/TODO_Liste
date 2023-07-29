@@ -7,16 +7,15 @@
     <h1>API Anfrage</h1>
     <button onclick="sendRequest()">API Anfrage senden</button>
     <p id="response"></p>
-
+    <script src="config.js"></script> <!-- in diesem skript wird der "secretKey gespeichert" -->
+        
     <script>
         function sendRequest() {
-            // Deine API-URL hier einsetzen
             var apiUrl = 'http://127.0.0.1:5000/api/protected';
-
             fetch(apiUrl, {
                 method: 'GET',
                 headers: {
-                    'Authorization': 'Bearer sicher123'
+                    'Authorization': 'Bearer ' + secretKey
                 }
             })
             .then(response => response.json())

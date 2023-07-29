@@ -45,9 +45,10 @@ def logout():
 @app.route('/api/protected', methods=['GET'])
 def protected_api():
     token = request.headers.get('Authorization')
+    # TODO: remove >>>>>>>>
     print(token)
     print(f"Bearer {SECRET_TOKEN}")
-
+        # <<<<<<<<
     # Überprüfe, ob ein Token gesendet wurde und ob es dem erwarteten Token entspricht
     if token and token == f"Bearer {SECRET_TOKEN}":
         return jsonify({'message': 'Geschützte Ressource erfolgreich abgerufen'}), 200
