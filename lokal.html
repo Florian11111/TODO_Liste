@@ -25,6 +25,7 @@
     </style>
     <script src="config.js"></script> <!-- in diesem skript wird der "secretKey gespeichert" -->
     <script>
+
         function alleAufgaben() {
             fetch(apiUrl + '/api/alleTask', {
                 method: 'GET',
@@ -71,7 +72,6 @@
             button.textContent = "Aktion ausführen";
             button.addEventListener("click", () => handleButtonClick(data, li));
             li.appendChild(button);
-
             return li;
         }
 
@@ -99,6 +99,7 @@
                 document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
             });
         }
+        setInterval(alleAufgaben, 10000);
     </script>
 </body>
 </html>
