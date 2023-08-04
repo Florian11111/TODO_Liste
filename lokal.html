@@ -5,23 +5,94 @@
 </head>
 <body>
     <h1>API Anfrage</h1>
-    <button onclick="sendRequest()">API Anfrage senden</button>
+    <button onclick="alleAufgaben()">API Anfrage senden</button>
     <p id="response"></p>
+
+    <ul id="taskList" class="task-list1">
+        <!-- The tasks will be added dynamically using JavaScript -->
+    </ul>
+    <h1>----------------------------------------------------</h1>
+    <ul id="taskListFertig" class="task-list2">
+        <!-- The tasks will be added dynamically using JavaScript -->
+    </ul>
+    <style>
+        .task-list1 {
+            color: aqua;
+        }
+        .task-list2 {
+            color: red;
+        }
+    </style>
     <script src="config.js"></script> <!-- in diesem skript wird der "secretKey gespeichert" -->
-        
     <script>
-        function sendRequest() {
-            var apiUrl = 'http://127.0.0.1:5000/api/protected';
-            fetch(apiUrl, {
+        function alleAufgaben() {
+            fetch(apiUrl + '/api/alleTask', {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + secretKey
                 }
             })
             .then(response => response.json())
-            .then(data => {
-                // Zeige die empfangene Nachricht in einem Absatz auf der Seite an
-                document.getElementById('response').innerText = data.message;
+            .then(data => {   
+                document.getElementById("taskList").innerHTML = "";
+                document.getElementById("taskListFertig").innerHTML = "";
+                data.forEach((task) => {
+                    const listItem = createListItem(task);
+                    if (task.checkt === 0) {
+                        document.getElementById("taskList").appendChild(listItem);
+                    } else {
+                        document.getElementById("taskListFertig").appendChild(listItem);
+                    }
+                });
+                // Zeige die empfangene Nachricht in einem Absatz auf der Seite and
+                // document.getElementById('response').innerText = data.message;
+            })
+            .catch(error => {
+                // Zeige eine Fehlermeldung, wenn die Anfrage fehlschlägt
+                document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
+            });
+        }
+
+        function createListItem(data) {
+            const { id, color, title, description, checkt } = data;
+
+            const li = document.createElement("li");
+            li.style.backgroundColor = color;
+
+            const strong = document.createElement("strong");
+            strong.textContent = title;
+            li.appendChild(strong);
+
+            const p = document.createElement("p");
+            p.textContent = description;
+            li.appendChild(p);
+
+            const button = document.createElement("button");
+            button.textContent = "Aktion ausführen";
+            button.addEventListener("click", () => handleButtonClick(data, li));
+            li.appendChild(button);
+
+            return li;
+        }
+
+        function handleButtonClick(data, listItem) {
+            fetch(apiUrl + '/api/aufgabeCheck', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + secretKey,
+                    'AufgabenlisteID': data.id,
+                    'neuerStand': data.checkt == 0 ? 1 : 0
+                }
+            })
+            .then(response => response.json())
+            .then(antwort => {   
+                if (antwort.aktuallisiert == 1) {
+                    data.checkt = 1;
+                    document.getElementById("taskListFertig").appendChild(listItem);
+                } else {
+                    data.checkt = 0;
+                    document.getElementById("taskList").appendChild(listItem);
+                }
             })
             .catch(error => {
                 // Zeige eine Fehlermeldung, wenn die Anfrage fehlschlägt

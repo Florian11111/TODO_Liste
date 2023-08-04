@@ -33,8 +33,9 @@ cursor.execute("SELECT * FROM aufgabe")
 rows = cursor.fetchall()
 
 # Ergebnisse ausgeben
-for row in rows:
-    print(row)
+#for row in rows:
+ #   print(row)
+
 
 # Verbindung schließen
 conn.close()

@@ -37,6 +37,7 @@ cursor.execute("""
         aufgabeID INTEGER
     )
 """)
+
 '''
 # Beispiel-Daten einfügen
 cursor.execute("""
@@ -61,3 +62,7 @@ for row in rows:
 
 # Verbindung schließen
 conn.close()
+
+
+def aktuelle(id, aktuellerStatus):
+    return aktuellerStatus
