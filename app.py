@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_cors import CORS
 import json
-import sqlite3
 import datenBank
 
 app = Flask(__name__)
@@ -53,19 +52,7 @@ def alleTask_api():
         # <<<<<<<<
     # Überprüfe, ob ein Token gesendet wurde und ob es dem erwarteten Token entspricht
     if token and token == f"Bearer {SECRET_TOKEN}":
-        return jsonify({'id': 12,
-                        'color': '#ff7675',
-                        'title': 'Aufgabe1',
-                        'description': 'Beschreinung für erste aufgabe',
-                        'checkt': 1
-                        },
-                        {'id': 13,
-                        'color': '#ff7645',
-                        'title': 'Aufgabe2',
-                        'description': 'Beschreinung für zweite aufgabe',
-                        'checkt': 1
-                        }
-                        ), 200
+        return jsonify(datenBank.aufgabenVonHeute()), 200
     else:
         return jsonify({'message': 'Unautorisierter Zugriff'}), 401
 

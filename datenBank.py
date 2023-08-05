@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 
 datenBankpfad = "test.db"
 # Verbindung zur Datenbank herstellen oder eine neue erstellen
@@ -24,6 +25,7 @@ cursor.execute("""
         farbe INTEGER NOT NULL,
         bisWann TEXT NOT NULL,
         wannErledigt Text,
+        erledigt INTEGER NOT NULL,
         aufgabeID INTEGER
     )
 """)
@@ -41,18 +43,36 @@ cursor.execute("""
 # Änderung speichern
 conn.commit()
 conn.close()
-print("Datenbank erfolgreich gestatet!")
+print("Datenbank [", datenBankpfad, "] gestatet!")
 
 
-'''
-# Daten aus der Tabelle abrufen
-cursor.execute("SELECT * FROM aufgabe")
-rows = cursor.fetchall()
+# returnt die Aufgaben die am tag x zu erledigen ist
+def getAufgabenTagX(datum):
+    connection = sqlite3.connect(datenBankpfad)
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT * FROM aufgabenEintag
+        WHERE DATE(bisWann) = DATE(?)
+    """, (datum,))
+    aufgaben = cursor.fetchall()
+    connection.close()
+    return aufgaben
 
-# Ergebnisse ausgeben
-for row in rows:
-    print(row)
-'''
+def aufgabenVonHeute():
+    datumHeute = datetime.now().date().isoformat()
+    temp = []
+    for x in getAufgabenTagX(datumHeute):
+        aufgabe = getAufgabe(x[5])
+        formatted_item = {
+        'id': x[0],
+        'color': x[1],
+        'title': aufgabe[1],
+        'description': aufgabe[2],
+        'checkt': x[4]
+        }
+        temp.append(formatted_item)
+    return temp
+
 
 # returnt die Aufgabe mit der id, wenn id nicht gefunen -1
 def getAufgabe(id):
@@ -102,18 +122,37 @@ def neueAufgabeUndEintrag(titel, beschreibung, farbe, bisWann):
     conn = sqlite3.connect(datenBankpfad)
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO aufgabenEintag (farbe, bisWann, aufgabeID)
-        VALUES (?, ?, ?)
+        INSERT INTO aufgabenEintag (farbe, bisWann, aufgabeID, erledigt)
+        VALUES (?, ?, ?, 0)
     """, (farbe, bisWann, aufgaben_id))
     conn.commit()
     conn.close()
     return aufgaben_id
 
 ''' 
-Wird aufgerufen wenn ein eintrag abgehackt wird.
-Wenn es ein Aufgaben eintrag mit der id gibt wird dieser aktualliesiert
-und der neue Status zurückgebenen wenn es die id nicht gibt -1
+TODO: Wird aufgerufen wenn ein eintrag abgehackt wird.
+Wenn es ein Aufgaben eintrag mit der id gibt wird dieser aktualliesiert, Außerdem wird
+das erlegigt datum gespeichert / gelöscht
+und der neue Status zurückgebenen wenn es die id nicht gibt -1 
 '''
 def aktuelle(id, aktuellerStatus):
-    return aktuellerStatus
+    connection = sqlite3.connect(datenBankpfad)
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM aufgabenEintag WHERE id = ?", (id,))
+    eintrag = cursor.fetchone()
+    if eintrag:
+        if aktuellerStatus == 1:
+            # Eintrag wurde abgehakt, also aktualisieren
+            cursor.execute("UPDATE aufgabenEintag SET wannErledigt = DATE('now'), erledigt = 1 WHERE id = ?", (id,))
+            returnTemp = 1
+        else:
+            # Eintrag wird als nicht abgehakt markiert
+            cursor.execute("UPDATE aufgabenEintag SET wannErledigt = NULL, erledigt = 0 WHERE id = ?", (id,))
+            returnTemp = 0
+        connection.commit()
+    else:
+        returnTemp = -1
+
+    connection.close()
+    return returnTemp
 
