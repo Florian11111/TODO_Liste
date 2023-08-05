@@ -46,10 +46,6 @@ def logout():
 @app.route('/api/alleTask', methods=['GET'])
 def alleTask_api():
     token = request.headers.get('Authorization')
-    # TODO: remove >>>>>>>>
-    print(token)
-    print(f"Bearer {SECRET_TOKEN}")
-        # <<<<<<<<
     # Überprüfe, ob ein Token gesendet wurde und ob es dem erwarteten Token entspricht
     if token and token == f"Bearer {SECRET_TOKEN}":
         return jsonify(datenBank.aufgabenVonHeute()), 200
@@ -65,7 +61,6 @@ def aufgabeCheck_api():
         ids = request.headers.get('AufgabenlisteID')
         status = request.headers.get('neuerStand')
         temp = datenBank.aktuelle(ids, status)
-        print(temp)
         if temp == -1:
             raise ValueError("Aufgabenid nicht gefunden: ", ids)
         return jsonify({'aktuallisiert': temp}), 200

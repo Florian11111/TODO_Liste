@@ -141,7 +141,7 @@ def aktuelle(id, aktuellerStatus):
     cursor.execute("SELECT * FROM aufgabenEintag WHERE id = ?", (id,))
     eintrag = cursor.fetchone()
     if eintrag:
-        if aktuellerStatus == 1:
+        if int(aktuellerStatus) == 1:
             # Eintrag wurde abgehakt, also aktualisieren
             cursor.execute("UPDATE aufgabenEintag SET wannErledigt = DATE('now'), erledigt = 1 WHERE id = ?", (id,))
             returnTemp = 1
@@ -152,7 +152,6 @@ def aktuelle(id, aktuellerStatus):
         connection.commit()
     else:
         returnTemp = -1
-
     connection.close()
     return returnTemp
 
