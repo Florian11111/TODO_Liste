@@ -15,6 +15,7 @@
     <ul id="taskListFertig" class="task-list2">
         <!-- The tasks will be added dynamically using JavaScript -->
     </ul>
+
     <style>
         .task-list1 {
             color: aqua;
@@ -23,8 +24,11 @@
             color: red;
         }
     </style>
+
     <script src="config.js"></script> <!-- in diesem skript wird der "secretKey gespeichert" -->
     <script>
+        // speichert alle tasks
+        let aufgabenListe = [];
 
         function alleAufgaben() {
             fetch(apiUrl + '/api/alleTask', {
@@ -35,18 +39,17 @@
             })
             .then(response => response.json())
             .then(data => {   
+                aufgabenListe = data; 
                 document.getElementById("taskList").innerHTML = "";
                 document.getElementById("taskListFertig").innerHTML = "";
-                data.forEach((task) => {
-                    const listItem = createListItem(task);
-                    if (task.checkt === 0) {
+                for (let i = 0; i < aufgabenListe.length; i++) {
+                    listItem = createListItem(i);
+                    if (aufgabenListe[i].checkt === 0) {
                         document.getElementById("taskList").appendChild(listItem);
                     } else {
                         document.getElementById("taskListFertig").appendChild(listItem);
                     }
-                });
-                // Zeige die empfangene Nachricht in einem Absatz auf der Seite and
-                // document.getElementById('response').innerText = data.message;
+                }
             })
             .catch(error => {
                 // Zeige eine Fehlermeldung, wenn die Anfrage fehlschlägt
@@ -54,8 +57,8 @@
             });
         }
 
-        function createListItem(data) {
-            const { id, color, title, description, checkt } = data;
+        function createListItem(index) {
+            const { id, color, title, description, checkt } = aufgabenListe[index];
 
             const li = document.createElement("li");
             li.style.backgroundColor = color;
@@ -70,36 +73,51 @@
 
             const button = document.createElement("button");
             button.textContent = "Aktion ausführen";
-            button.addEventListener("click", () => handleButtonClick(data, li));
+            button.addEventListener("click", () => handleButtonClick(index, li));
             li.appendChild(button);
             return li;
         }
 
-        function handleButtonClick(data, listItem) {
-            fetch(apiUrl + '/api/aufgabeCheck', {
+        function istVeraendert() {
+            fetch(apiUrl + '/api/pollingCheck', {
                 method: 'GET',
                 headers: {
-                    'Authorization': 'Bearer ' + secretKey,
-                    'AufgabenlisteID': data.id,
-                    'neuerStand': data.checkt == 0 ? 1 : 0
+                    'Authorization': 'Bearer ' + secretKey
                 }
             })
             .then(response => response.json())
             .then(antwort => {   
-                if (antwort.aktuallisiert == 1) {
-                    data.checkt = 1;
-                    document.getElementById("taskListFertig").appendChild(listItem);
-                } else {
-                    data.checkt = 0;
-                    document.getElementById("taskList").appendChild(listItem);
+                if (antwort.polling == 1) {
+                    alleAufgaben();
                 }
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
+            });
+        }
+
+        function handleButtonClick(index, listItem) {
+            fetch(apiUrl + '/api/aufgabeCheck', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + secretKey,
+                    'AufgabenlisteID': aufgabenListe[index].id,
+                    'neuerStand': aufgabenListe[index].checkt == 0 ? 1 : 0
+                }
+            })
+            .then(response => response.json())
+            .then(antwort => {  
+                aufgabenListe[index].checkt = antwort.aktuallisiert;
+                alleAufgaben();
             })
             .catch(error => {
                 // Zeige eine Fehlermeldung, wenn die Anfrage fehlschlägt
                 document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
             });
         }
-        setInterval(alleAufgaben, 10000);
+        alleAufgaben();
+        // aktuallisiert alle 60 sekunden
+        setInterval(istVeraendert, 500);
     </script>
 </body>
 </html>

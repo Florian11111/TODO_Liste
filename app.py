@@ -8,10 +8,12 @@ CORS(app)
 
 with open('config.json', 'r') as config_file:
     config = json.load(config_file)
-
+# daten aus json geladen
 app.secret_key = config["secret_key"]
 SECRET_TOKEN = config["secret_token"]
 users = config["users"]
+# wenn eine änderung verhanden ist update = 1
+update = 0
 
 # Route für die Anmeldeseite
 @app.route('/login', methods=['GET', 'POST'])
@@ -19,7 +21,6 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
         if username in users and users[username]['password'] == password:
             session['logged_in'] = True
             session['username'] = username
@@ -45,6 +46,8 @@ def logout():
 # REST API TEIL --------------------------------------------------------------
 @app.route('/api/alleTask', methods=['GET'])
 def alleTask_api():
+    global update
+    update = 0
     token = request.headers.get('Authorization')
     # Überprüfe, ob ein Token gesendet wurde und ob es dem erwarteten Token entspricht
     if token and token == f"Bearer {SECRET_TOKEN}":
@@ -55,6 +58,8 @@ def alleTask_api():
 
 @app.route('/api/aufgabeCheck', methods=['GET'])
 def aufgabeCheck_api():
+    global update
+    update = 1
     token = request.headers.get('Authorization')
     # Überprüfe, ob ein Token gesendet wurde und ob es dem erwarteten Token entspricht
     if token and token == f"Bearer {SECRET_TOKEN}":
@@ -67,5 +72,15 @@ def aufgabeCheck_api():
     else:
         return jsonify({'message': 'Unautorisierter Zugriff'}), 401
 
+
+@app.route('/api/webSocket', methods=['GET'])
+def updateCheck():
+    global update
+    token = request.headers.get('Authorization')
+    if token and token == f"Bearer {SECRET_TOKEN}":
+        return jsonify({'update': update}), 200
+    else:
+        return jsonify({'message': 'Unautorisierter Zugriff'}), 401
+    
 if __name__ == '__main__':
     app.run(debug=True)
