@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 
+
 datenBankpfad = "test.db"
 # Verbindung zur Datenbank herstellen oder eine neue erstellen
 conn = sqlite3.connect(datenBankpfad)

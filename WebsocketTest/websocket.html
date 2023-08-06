@@ -1,26 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
-   <head>
-      <meta charset="UTF-8">
-      <title>SocketIO example</title>
-      <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
-      <script type="text/javascript">
-         $(document).ready(function() {
-         
-           // sending a connect request to the server.
-           var socket = io.connect('http://localhost:5000');
-         
-           socket.on('after connect', function(msg) {
-               console.log('After connect', msg);
-               $('#log').append('<br>' + $('<div/>').text('Received: ' + msg.data).html());
-          });        
-         });
-      </script>
-   </head>
-   <body>
-    <h1>SocketIO Example</h1>
-    <h2>Receive:</h2>
-    <div id="log"></div>
-   </body>
+<html>
+<head>
+    <title>WebSocket Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script type="text/javascript">
+        // Stellen Sie sicher, dass Sie den richtigen Host und Port verwenden
+        const socket = io.connect('http://localhost:5000'); // Beispiel: http://localhost:5000
+
+        socket.on('connect', function() {
+            console.log('Connected to Socket.IO server');
+        });
+
+        socket.on('message', function(data) {
+            console.log('Received:', data);
+        });
+
+        socket.on('token_verified', function(response) {
+            console.log('Token verified:', response.message);
+            // Hier können Sie Ihre Aktionen ausführen
+            alleAufgaben();
+        });
+
+        socket.on('token_verification_failed', function(response) {
+            console.log('Token verification failed:', response.message);
+            // Hier können Sie bei Bedarf auf Token-Fehler reagieren
+            socket.disconnect();
+        });
+
+        function verifyToken() {
+            var token = prompt('Please enter your token:');
+            if (token) {
+                socket.emit('token_verification', { 'token': token });
+            } else {
+                console.log('Token not provided.');
+            }
+        }
+
+        function alleAufgaben() {
+            console.log('Performing tasks...');
+        }
+    </script>
+</head>
+<body>
+    <button onclick="verifyToken()">Verify Token</button>
+</body>
 </html>
