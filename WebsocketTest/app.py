@@ -14,7 +14,6 @@ def index():
 @socketio.on('connect')
 def handle_connect():
     user_token = request.args.get('token')
-    
     if user_token != valid_token:
         emit('invalid_token')
         disconnect()

@@ -7,6 +7,7 @@
     <h1>API Anfrage</h1>
     <button onclick="alleAufgaben()">API Anfrage senden</button>
     <p id="response"></p>
+    <div id="output"></div>
 
     <ul id="taskList" class="task-list1">
         <!-- The tasks will be added dynamically using JavaScript -->
@@ -24,7 +25,7 @@
             color: red;
         }
     </style>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> <!-- für websocket -->
     <script src="config.js"></script> <!-- in diesem skript wird der "secretKey gespeichert" -->
     <script>
         // speichert alle tasks
@@ -78,24 +79,6 @@
             return li;
         }
 
-        function istVeraendert() {
-            fetch(apiUrl + '/api/pollingCheck', {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + secretKey
-                }
-            })
-            .then(response => response.json())
-            .then(antwort => {   
-                if (antwort.polling == 1) {
-                    alleAufgaben();
-                }
-            })
-            .catch(error => {
-                document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
-            });
-        }
-
         function handleButtonClick(index, listItem) {
             fetch(apiUrl + '/api/aufgabeCheck', {
                 method: 'GET',
@@ -115,9 +98,37 @@
                 document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
             });
         }
+        
+        var socket;
+        var validToken = '123';  // Replace with your valid token
+        
+        function connectToSocket() {
+            socket = io.connect(apiUrl, {
+                query: { token: validToken }
+            });
+            
+            socket.on('connect', function() {
+                console.log('WebSocket connected');
+            });
+            
+            socket.on('message', function(message) {
+                console.log(message)
+                document.getElementById('output').innerHTML = '<p>' + message + '</p>';
+            });
+
+            // Listen for the 'update_notification' event
+            socket.on('update_notification', function(data) {
+                console.log('Update notification received:', data.message);
+                document.getElementById('output').innerHTML = '<p>Update available: ' + data.message + '</p>';
+            });
+            
+            socket.on('invalid_token', function() {
+                console.log('Invalid token. Closing WebSocket connection.');
+                socket.close();
+            });
+        }
         alleAufgaben();
-        // aktuallisiert alle 60 sekunden
-        setInterval(istVeraendert, 500);
+        connectToSocket();
     </script>
 </body>
 </html>

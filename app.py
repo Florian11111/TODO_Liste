@@ -1,10 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit, disconnect
 import json
+import threading
+import time
+# eigene imports
 import datenBank
 
 app = Flask(__name__)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 with open('config.json', 'r') as config_file:
     config = json.load(config_file)
@@ -14,6 +19,8 @@ SECRET_TOKEN = config["secret_token"]
 users = config["users"]
 # wenn eine änderung verhanden ist update = 1
 update = 0
+valid_token = '123' 
+
 
 # Route für die Anmeldeseite
 @app.route('/login', methods=['GET', 'POST'])
@@ -44,6 +51,7 @@ def logout():
     return redirect(url_for('login'))
 
 # REST API TEIL --------------------------------------------------------------
+
 @app.route('/api/alleTask', methods=['GET'])
 def alleTask_api():
     global update
@@ -81,6 +89,44 @@ def updateCheck():
         return jsonify({'update': update}), 200
     else:
         return jsonify({'message': 'Unautorisierter Zugriff'}), 401
-    
+
+
+# Websocket Teil --------------------------------------------------
+@socketio.on('connect')
+def handle_connect():
+    user_token = request.args.get('token')
+    if user_token != valid_token:
+        emit('invalid_token')
+        disconnect()
+    else:
+        emit('message', 'Successfully connected')
+
+@socketio.on('message')
+def handle_message(message):
+    print('Received message:', message)
+    socketio.send('Message received: ' + message)
+    '''
+@socketio.on('connect')
+def handle_connect():
+    print("test!")
+    user_token = request.args.get('token')
+    if user_token != SECRET_TOKEN:
+        emit('invalid_token')
+        disconnect()
+    else:
+        print("WebSocket Verbindung hergestellt!")
+        emit('message', 'Successfully connected')
+'''
+def updateAenderung():
+    print("Hello testasdcvfdsa")
+    global update
+    while True:
+        socketio.emit('update_notification', {'message': 'Update available'})
+        update = 0
+        print("Gesendet!")
+        time.sleep(2)  # Wait for 30 seconds before checking again
+
+update_thread = threading.Thread(target=updateAenderung, daemon=True).start()
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)

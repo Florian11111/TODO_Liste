@@ -8,8 +8,8 @@ def farbeZufall():
     return "#{:02x}{:02x}{:02x}".format(r, g, b)
 
 # ISO-Format Datum
-datum = "2023-08-05"
-datum2 = "2023-08-06"
+datum = "2023-08-08"
+datum2 = "2023-08-09"
 datum3 = "2023-08-07"
 '''
 print(db.neueAufgabeUndEintrag("TestTitel", "Das ist ein Test", farbeZufall(), datum))
