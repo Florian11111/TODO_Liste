@@ -1,30 +1,30 @@
-from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
-from flask_cors import CORS
+from flask import Flask, render_template, request
+from flask_socketio import SocketIO, emit, disconnect
+import time
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret'
-socketio = SocketIO(app, async_mode='eventlet')
-CORS(app)
-socketio.init_app(app, cors_allowed_origins="http://localhost:8000")
+socketio = SocketIO(app, cors_allowed_origins="*")
 
-valid_token = '123'
+valid_token = '123'  # Replace with your valid token
 
 @app.route('/')
 def index():
-    return "Hallo"
+    return "test"
 
 @socketio.on('connect')
-def test_connect():
-    emit('message', {'data': 'Connected'})
-
-@socketio.on('token_verification')
-def verify_token(data):
-    if data.get('token') == valid_token:
-        emit('token_verified', {'message': 'Token verified'})
+def handle_connect():
+    user_token = request.args.get('token')
+    
+    if user_token != valid_token:
+        emit('invalid_token')
+        disconnect()
     else:
-        emit('token_verification_failed', {'message': 'Token verification failed'})
-        socketio.disconnect()
+        emit('message', 'Successfully connected')
+
+@socketio.on('message')
+def handle_message(message):
+    print('Received message:', message)
+    socketio.send('Message received: ' + message)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
