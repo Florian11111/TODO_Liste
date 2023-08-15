@@ -3,7 +3,6 @@ from flask_cors import CORS
 from flask_socketio import SocketIO, emit, disconnect
 import json
 import threading
-import time
 # eigene imports
 import datenBank
 
@@ -18,7 +17,8 @@ app.secret_key = config["secret_key"]
 SECRET_TOKEN = config["secret_token"]
 users = config["users"]
 # wenn eine änderung verhanden ist update = 1
-update = 0
+updateWeb = 0
+updateLokal = 0
 valid_token = '123' 
 
 
@@ -66,8 +66,7 @@ def alleTask_api():
 
 @app.route('/api/aufgabeCheck', methods=['GET'])
 def aufgabeCheck_api():
-    global update
-    update = 1
+    global updateWeb
     token = request.headers.get('Authorization')
     # Überprüfe, ob ein Token gesendet wurde und ob es dem erwarteten Token entspricht
     if token and token == f"Bearer {SECRET_TOKEN}":
@@ -76,20 +75,11 @@ def aufgabeCheck_api():
         temp = datenBank.aktuelle(ids, status)
         if temp == -1:
             raise ValueError("Aufgabenid nicht gefunden: ", ids)
+        updateWeb = 1
         return jsonify({'aktuallisiert': temp}), 200
     else:
+        updateWeb = 1
         return jsonify({'message': 'Unautorisierter Zugriff'}), 401
-
-
-@app.route('/api/webSocket', methods=['GET'])
-def updateCheck():
-    global update
-    token = request.headers.get('Authorization')
-    if token and token == f"Bearer {SECRET_TOKEN}":
-        return jsonify({'update': update}), 200
-    else:
-        return jsonify({'message': 'Unautorisierter Zugriff'}), 401
-
 
 # Websocket Teil --------------------------------------------------
 @socketio.on('connect')
@@ -105,26 +95,25 @@ def handle_connect():
 def handle_message(message):
     print('Received message:', message)
     socketio.send('Message received: ' + message)
-    '''
-@socketio.on('connect')
-def handle_connect():
-    print("test!")
-    user_token = request.args.get('token')
-    if user_token != SECRET_TOKEN:
-        emit('invalid_token')
-        disconnect()
-    else:
-        print("WebSocket Verbindung hergestellt!")
-        emit('message', 'Successfully connected')
-'''
+
+
 def updateAenderung():
-    print("Hello testasdcvfdsa")
-    global update
+    global updateLokal
     while True:
-        socketio.emit('update_notification', {'message': 'Update available'})
-        update = 0
-        print("Gesendet!")
-        time.sleep(2)  # Wait for 30 seconds before checking again
+        if updateLokal == 1:
+            socketio.emit('update', 1)
+            updateLokal = 0
+            print("Gesendet!")
+
+# ----------------------- TODO: remove
+def Entfernen():
+    global updateLokal
+    while True:
+        if input() == "updaten!":
+            updateLokal = 1
+
+update_thread1 = threading.Thread(target=Entfernen, daemon=True).start()
+# ----------------------- remove
 
 update_thread = threading.Thread(target=updateAenderung, daemon=True).start()
 

@@ -43,14 +43,14 @@
                 aufgabenListe = data; 
                 document.getElementById("taskList").innerHTML = "";
                 document.getElementById("taskListFertig").innerHTML = "";
-                for (let i = 0; i < aufgabenListe.length; i++) {
-                    listItem = createListItem(i);
-                    if (aufgabenListe[i].checkt === 0) {
-                        document.getElementById("taskList").appendChild(listItem);
+                aufgabenListe.forEach((task, index) => {
+                    const listItem = createListItem(index);
+                    if (task.checkt === 0) {
+                        taskList.appendChild(listItem);
                     } else {
-                        document.getElementById("taskListFertig").appendChild(listItem);
+                        taskListFertig.appendChild(listItem);
                     }
-                }
+                });
             })
             .catch(error => {
                 // Zeige eine Fehlermeldung, wenn die Anfrage fehlschlägt
@@ -80,25 +80,56 @@
         }
 
         function handleButtonClick(index, listItem) {
+            const newChecktValue = aufgabenListe[index].checkt === 0 ? 1 : 0;
+            if (aufgabenListe[index].checkt === 0) {
+                removeListItemFromList(index, taskList)
+            } else {
+                removeListItemFromList(index, taskListFertig)
+            }
+
             fetch(apiUrl + '/api/aufgabeCheck', {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + secretKey,
                     'AufgabenlisteID': aufgabenListe[index].id,
-                    'neuerStand': aufgabenListe[index].checkt == 0 ? 1 : 0
+                    'neuerStand': newChecktValue
                 }
             })
             .then(response => response.json())
             .then(antwort => {  
                 aufgabenListe[index].checkt = antwort.aktuallisiert;
-                alleAufgaben();
+                updateAlleAufgaben();
             })
             .catch(error => {
-                // Zeige eine Fehlermeldung, wenn die Anfrage fehlschlägt
                 document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
+                updateAlleAufgaben();
             });
         }
-        
+
+        function removeListItemFromList(index, list) {
+            const listItems = list.querySelectorAll("li");
+            if (listItems[index]) {
+                listItems[index].remove();
+            }
+        }
+
+        function updateAlleAufgaben() {
+            const taskList = document.getElementById("taskList");
+            const taskListFertig = document.getElementById("taskListFertig");
+
+            taskList.innerHTML = ""; // Leere die Listen
+            taskListFertig.innerHTML = "";
+
+            aufgabenListe.forEach((task, index) => {
+                const listItem = createListItem(index);
+                if (task.checkt === 0) {
+                    taskList.appendChild(listItem);
+                } else {
+                    taskListFertig.appendChild(listItem);
+                }
+            });
+        }
+
         var socket;
         var validToken = '123';  // Replace with your valid token
         
@@ -106,11 +137,18 @@
             socket = io.connect(apiUrl, {
                 query: { token: validToken }
             });
-            
+
             socket.on('connect', function() {
                 console.log('WebSocket connected');
             });
-            
+
+            socket.on('update', function(state) {
+                if (state == 1) {
+                    alleAufgaben(); // updatet alle Aufgaben
+                }
+            });
+
+            /*
             socket.on('message', function(message) {
                 console.log(message)
                 document.getElementById('output').innerHTML = '<p>' + message + '</p>';
@@ -121,7 +159,7 @@
                 console.log('Update notification received:', data.message);
                 document.getElementById('output').innerHTML = '<p>Update available: ' + data.message + '</p>';
             });
-            
+            */
             socket.on('invalid_token', function() {
                 console.log('Invalid token. Closing WebSocket connection.');
                 socket.close();
