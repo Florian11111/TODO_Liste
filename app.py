@@ -40,7 +40,8 @@ def login():
 @app.route('/protected')
 def protected():
     if 'logged_in' in session and session['logged_in']:
-        return f'Willkommen, {session["username"]}! Dies ist die geschützte Seite.'
+        return render_template('todo.html')
+        # return render_template('todo.html', information="test") wert übergeben
     else:
         return 'Du musst dich zuerst anmelden, um diese Seite zu sehen.'
 
@@ -50,42 +51,62 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+@app.errorhandler(404)
+def page_not_found(e):
+    if 'logged_in' in session and session['logged_in']:
+        return redirect(url_for('protected'))
+    else:
+        return redirect(url_for('login'))
+
 # REST API TEIL --------------------------------------------------------------
 
+@app.route('/api/addTask', methods=['GET'])
+def addTask():
+    if 'logged_in' in session and session['logged_in']:
+        titel = request.headers.get('titel')
+        beschreibung = request.headers.get('beschreibung')
+        farbe = request.headers.get('farbe')
+        datum = request.headers.get('datum')
+        datenBank.neueAufgabeUndEintrag(titel, beschreibung, farbe, datum)
+
 @app.route('/api/alleTask', methods=['GET'])
-def alleTask_api():
+def alleTask():
+    # TODO: update verhalten ändern
     global update
     update = 0
     token = request.headers.get('Authorization')
-    # Überprüfe, ob ein Token gesendet wurde und ob es dem erwarteten Token entspricht
-    if token and token == f"Bearer {SECRET_TOKEN}":
+    # Überprüfe, ob der Benutzer eingeloggt ist oder ein gültiges Token gesendet wurde
+    if 'logged_in' in session and session['logged_in']:
+        return jsonify(datenBank.aufgabenVonHeute()), 200
+    elif token and token == f"Bearer {SECRET_TOKEN}":
         return jsonify(datenBank.aufgabenVonHeute()), 200
     else:
         return jsonify({'message': 'Unautorisierter Zugriff'}), 401
 
 
+
 @app.route('/api/aufgabeCheck', methods=['GET'])
-def aufgabeCheck_api():
+def aufgabeCheck():
     global updateWeb
     token = request.headers.get('Authorization')
-    # Überprüfe, ob ein Token gesendet wurde und ob es dem erwarteten Token entspricht
-    if token and token == f"Bearer {SECRET_TOKEN}":
+    if 'logged_in' in session and session['logged_in'] or (token and token == f"Bearer {SECRET_TOKEN}"):
         ids = request.headers.get('AufgabenlisteID')
         status = request.headers.get('neuerStand')
         temp = datenBank.aktuelle(ids, status)
         if temp == -1:
-            raise ValueError("Aufgabenid nicht gefunden: ", ids)
+            raise ValueError("Aufgabenid nicht gefunden:", ids)
         updateWeb = 1
         return jsonify({'aktuallisiert': temp}), 200
     else:
         updateWeb = 1
         return jsonify({'message': 'Unautorisierter Zugriff'}), 401
 
+
 # Websocket Teil --------------------------------------------------
 @socketio.on('connect')
 def handle_connect():
-    user_token = request.args.get('token')
-    if user_token != valid_token:
+    token = request.args.get('token')
+    if token != valid_token and not 'logged_in' in session or not session['logged_in']:
         emit('invalid_token')
         disconnect()
     else:

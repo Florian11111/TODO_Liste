@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Anfrage</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/todoStyle.css') }}" />
+</head>
+<body>
+    <div class="top-bar">
+        <div>Text in der Bar</div>
+        <div class="buttons">
+            <button onclick="neuLaden()">Reload</button>
+            <button id="toggleKnopf">Neue Aufgabe erstellen</button>
+        </div>
+    </div>
+    <h1>API Anfrage</h1>
+    <p id="response"></p>
+    <div id="output"></div>
+
+    <ul id="taskList" class="task-list1">
+        <!-- The tasks will be added dynamically using JavaScript -->
+    </ul>
+    <h1>----------------------------------------------------</h1>
+    <ul id="taskListFertig" class="task-list2">
+        <!-- The tasks will be added dynamically using JavaScript -->
+    </ul>
+    
+    <div id="meinDiv">Dies ist das div-Element. Test</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> <!-- für websocket -->
+    <script src="/static/js/neueAufgabe.js"></script>
+    <script src="/static/js/apiKommonikation.js"></script>
+    <script>
+        // bei starten
+        var apiUrl = "{{ request.url_root }}";
+        connectToSocket();
+        alleAufgaben();
+    </script>
+</body>
+</html>
