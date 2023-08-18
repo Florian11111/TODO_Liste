@@ -143,6 +143,7 @@ function connectToSocket() {
 
     socket.on('update', function(state) {
         if (state == 1) {
+            console.log("update!")
             alleAufgaben(); // updatet alle Aufgaben
         }
     });

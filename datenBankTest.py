@@ -8,12 +8,12 @@ def farbeZufall():
     return "#{:02x}{:02x}{:02x}".format(r, g, b)
 
 # ISO-Format Datum
-datum = "2023-08-17"
-datum2 = "2023-08-17"
+datum = "2023-08-18"
+datum2 = "2023-08-18"
 
-anzahl_daten = 2
-#for x in range(anzahl_daten):
-    #print(db.neueAufgabeUndEintrag(f'TestTitel{x}', f'Das ist ein Test {x}', farbeZufall(), datum))
+anzahl_daten = 6
+for x in range(anzahl_daten):
+    print(db.neueAufgabeUndEintrag(f'TestTitel{x}', f'Das ist ein Test {x}', farbeZufall(), datum))
 
 
 temp = db.getAufgabenEintag(2)

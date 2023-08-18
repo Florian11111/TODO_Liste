@@ -17,8 +17,7 @@ app.secret_key = config["secret_key"]
 SECRET_TOKEN = config["secret_token"]
 users = config["users"]
 # wenn eine änderung verhanden ist update = 1
-updateWeb = 0
-updateLokal = 0
+update = 0
 valid_token = '123' 
 
 
@@ -60,14 +59,18 @@ def page_not_found(e):
 
 # REST API TEIL --------------------------------------------------------------
 
+
+
 @app.route('/api/addTask', methods=['GET'])
 def addTask():
+    global update
     if 'logged_in' in session and session['logged_in']:
         titel = str(request.headers.get('titel'))
         beschreibung = str(request.headers.get('beschreibung'))
         farbe = str(request.headers.get('farbe'))
         datum = str(request.headers.get('datum'))
-        print(datenBank.neueAufgabeUndEintrag(titel, beschreibung, farbe, datum))
+        datenBank.neueAufgabeUndEintrag(titel, beschreibung, farbe, datum)
+        update = 1
         return jsonify(1), 200
     else:
         return jsonify({'message': 'Unautorisierter Zugriff'}), 401
@@ -75,8 +78,6 @@ def addTask():
 @app.route('/api/alleTask', methods=['GET'])
 def alleTask():
     # TODO: update verhalten ändern
-    global update
-    update = 0
     token = request.headers.get('Authorization')
     # Überprüfe, ob der Benutzer eingeloggt ist oder ein gültiges Token gesendet wurde
     if 'logged_in' in session and session['logged_in']:
@@ -90,7 +91,7 @@ def alleTask():
 
 @app.route('/api/aufgabeCheck', methods=['GET'])
 def aufgabeCheck():
-    global updateWeb
+    global update
     token = request.headers.get('Authorization')
     if 'logged_in' in session and session['logged_in'] or (token and token == f"Bearer {SECRET_TOKEN}"):
         ids = request.headers.get('AufgabenlisteID')
@@ -98,10 +99,9 @@ def aufgabeCheck():
         temp = datenBank.aktuelle(ids, status)
         if temp == -1:
             raise ValueError("Aufgabenid nicht gefunden:", ids)
-        updateWeb = 1
+        update = 1
         return jsonify({'aktuallisiert': temp}), 200
     else:
-        updateWeb = 1
         return jsonify({'message': 'Unautorisierter Zugriff'}), 401
 
 
@@ -109,35 +109,19 @@ def aufgabeCheck():
 @socketio.on('connect')
 def handle_connect():
     token = request.args.get('token')
-    if token != valid_token and not 'logged_in' in session or not session['logged_in']:
+    if token == valid_token or 'logged_in' in session and session['logged_in']:
+        emit('message', 'Successfully connected')
+    else:
         emit('invalid_token')
         disconnect()
-    else:
-        emit('message', 'Successfully connected')
-
-@socketio.on('message')
-def handle_message(message):
-    print('Received message:', message)
-    socketio.send('Message received: ' + message)
-
 
 def updateAenderung():
-    global updateLokal
+    global update
     while True:
-        if updateLokal == 1:
+        if update == 1:
             socketio.emit('update', 1)
-            updateLokal = 0
+            update = 0
             print("Gesendet!")
-
-# ----------------------- TODO: remove
-def Entfernen():
-    global updateLokal
-    while True:
-        if input() == "updaten!":
-            updateLokal = 1
-
-update_thread1 = threading.Thread(target=Entfernen, daemon=True).start()
-# ----------------------- remove
 
 update_thread = threading.Thread(target=updateAenderung, daemon=True).start()
 
