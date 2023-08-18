@@ -119,6 +119,7 @@ def neueAufgabe(titel, beschreibung, aufgabenwiederhollung):
 
 # Erstellt eine aufgabe und ein dazugehörige Aufgabeneintrag
 def neueAufgabeUndEintrag(titel, beschreibung, farbe, bisWann):
+    print(bisWann)
     if titel is None or beschreibung is None or farbe is None or bisWann is None:
         raise ValueError("Das Argument darf nicht None sein.")
     aufgaben_id = neueAufgabe(titel, beschreibung, 0)

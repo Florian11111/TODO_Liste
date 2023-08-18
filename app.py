@@ -63,11 +63,14 @@ def page_not_found(e):
 @app.route('/api/addTask', methods=['GET'])
 def addTask():
     if 'logged_in' in session and session['logged_in']:
-        titel = request.headers.get('titel')
-        beschreibung = request.headers.get('beschreibung')
-        farbe = request.headers.get('farbe')
-        datum = request.headers.get('datum')
-        datenBank.neueAufgabeUndEintrag(titel, beschreibung, farbe, datum)
+        titel = str(request.headers.get('titel'))
+        beschreibung = str(request.headers.get('beschreibung'))
+        farbe = str(request.headers.get('farbe'))
+        datum = str(request.headers.get('datum'))
+        print(datenBank.neueAufgabeUndEintrag(titel, beschreibung, farbe, datum))
+        return jsonify(1), 200
+    else:
+        return jsonify({'message': 'Unautorisierter Zugriff'}), 401
 
 @app.route('/api/alleTask', methods=['GET'])
 def alleTask():

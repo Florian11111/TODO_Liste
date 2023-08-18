@@ -24,7 +24,34 @@
         <!-- The tasks will be added dynamically using JavaScript -->
     </ul>
     
-    <div id="meinDiv">Dies ist das div-Element. Test</div>
+    <div id="meinDiv">
+        <h2>Neue Aufgabe erstellen</h2>
+        <label id="error"></label><br>
+        <label for="title">Titel:</label>
+        <input type="text" id="title" name="title" required><br><br>
+        
+        <label for="beschreibung">Beschreibung:</label>
+        <textarea id="beschreibung" name="beschreibung" required></textarea><br><br>
+        
+        <label for="date">Datum:</label>
+        <input type="date" id="date" name="date" required>
+        <button type="button" onclick="datumHeute()">Heute</button>
+        <button type="button" onclick="datumMorgen()">Morgen</button><br><br>
+        
+        <label for="color">Farbe:</label>
+        <input type="color" id="color" name="color" value="#000000"><br><br>
+        
+        <label for="presetColors">Vorausgewählte Farben:</label>
+        <select id="presetColors" name="presetColors" onchange="syncColor()">
+            <option value="#FF0000">Rot</option>
+            <option value="#00FF00">Grün</option>
+            <option value="#0000FF">Blau</option>
+            <option value="#FFFF00">Gelb</option>
+            <option value="#FF00FF">Magenta</option>
+            <option value="#00FFFF">Cyan</option>
+        </select><br><br>
+        <button onclick="auswaehlen()">Auswählen</button>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> <!-- für websocket -->
     <script src="/static/js/neueAufgabe.js"></script>
