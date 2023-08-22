@@ -58,17 +58,21 @@ def loescheAufgabenEintrag(aufgabenEintrag_id):
         cursor.execute("DELETE FROM aufgabe WHERE id = ?", (aufgabe_id,))
     connection.commit()
 
-# erhoeht das datum eines Aufgabeneintrag
-def tage_erhoehen(aufgabenEintrag_id, tage):
+def datum_ersetzen(id, new_date):
     connection = sqlite3.connect(datenBankpfad)
     cursor = connection.cursor()
-    cursor.execute("SELECT wannErledigt FROM aufgabenEintag WHERE id = ?", (aufgabenEintrag_id,))
+    cursor.execute("SELECT bisWann FROM aufgabenEintag WHERE id = ?", (id,))
     current_date_str = cursor.fetchone()[0]
-    current_date = datetime.datetime.strptime(current_date_str, "%Y-%m-%d")
-    new_date = current_date + datetime.timedelta(days=tage)
-    new_date_str = new_date.strftime("%Y-%m-%d")
-    cursor.execute("UPDATE aufgabenEintag SET wannErledigt = ? WHERE id = ?", (new_date_str, aufgabenEintrag_id))
-    connection.commit()
+    current_date = datetime.strptime(current_date_str, "%Y-%m-%d")
+    new_date = datetime.strptime(new_date, "%Y-%m-%d")
+    if new_date == current_date:
+        return 0
+    elif new_date < current_date:
+        raise ValueError("Das übergebene Datum liegt in der Vergangenheit.")
+    else:
+        cursor.execute("UPDATE aufgabenEintag SET bisWann = ? WHERE id = ?", (new_date, id))
+        connection.commit()
+        return 1
 
 # returnt die Aufgaben die am tag x zu erledigen ist
 def getAufgabenTagX(datum):

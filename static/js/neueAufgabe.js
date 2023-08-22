@@ -18,8 +18,8 @@ function auswaehlen() {
   var color = document.getElementById("color").value;
   
   // wenn alle != null dann neue aufgabe erstellen. => wenn erfolgreich => datum auf heute, farbe auf rot, titel und beschreibung leeren
-  if (title === "" || beschreibung == "" || date == "" || color == "") {
-    document.getElementById("error").innerHTML = "bitte fülle alle felder aus\n";
+  if (title === "" || date == "" || color == "") {
+    document.getElementById("error").innerHTML = "bitte fülle alle datum und titel aus\n";
   } else {
     // Ausgabe der Werte in der Konsole
     fetch(apiUrl + '/api/addTask', {
@@ -68,5 +68,5 @@ function syncColor() {
   colorInput.value = presetColors.value;
 }
 
-datumMorgen();
+datumHeute();
 syncColor();

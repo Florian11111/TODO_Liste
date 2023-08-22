@@ -59,6 +59,19 @@ def page_not_found(e):
 
 # REST API TEIL --------------------------------------------------------------
 
+@app.route('/api/moveTask', methods=['GET'])
+def moveTask():
+    global update
+    if 'logged_in' in session and session['logged_in']:
+        id = str(request.headers.get('id'))
+        datum = str(request.headers.get('datum'))
+        status = datenBank.datum_ersetzen(id, datum)
+        update = 1
+        return jsonify(status), 200
+    else:
+        return jsonify({'message': 'Unautorisierter Zugriff'}), 401
+
+
 @app.route('/api/deleteTask', methods=['GET'])
 def deleteTask():
     global update

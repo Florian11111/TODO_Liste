@@ -1,8 +1,10 @@
 .task-list1 {
-    color: aqua;
+    color: white;
+    padding: auto;
 }
 .task-list2 {
-    color: red;
+    color: black;
+    background-color: gray;
 }
 #meinDiv {
     position: fixed;
@@ -35,3 +37,4 @@
     display: flex;
     gap: 10px;
 }
+
