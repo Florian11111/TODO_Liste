@@ -51,22 +51,22 @@ function createListItem(index) {
     li.appendChild(p);
 
     const button = document.createElement("button");
-    button.textContent = "Aktion ausführen";
-    button.addEventListener("click", () => handleButtonClick(index, li));
+    button.textContent = "Abhacken";
+    button.addEventListener("click", () => abhackenKnopf(index));
     li.appendChild(button);
     return li;
 }
-
+/*
 function neueAufgabe() {
     fetch(apiUrl + '/api/addTask', {
         method: 'GET',
         headers: {
-            /*
+            
             titel = request.headers.get('titel')
             beschreibung = request.headers.get('beschreibung')
             farbe = request.headers.get('farbe')
             datum = request.headers.get('datum')
-            */
+            
         }
     })
     .then(response => response.json())
@@ -78,9 +78,10 @@ function neueAufgabe() {
         document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
         updateAlleAufgaben();
     });
-}
+} 
+*/
 
-function handleButtonClick(index, listItem) {
+function abhackenKnopf(index) {
     const newChecktValue = aufgabenListe[index].checkt === 0 ? 1 : 0;
     if (aufgabenListe[index].checkt === 0) {
         removeListItemFromList(index, taskList)

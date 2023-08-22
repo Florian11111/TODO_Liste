@@ -59,6 +59,17 @@ def page_not_found(e):
 
 # REST API TEIL --------------------------------------------------------------
 
+@app.route('/api/deleteTask', methods=['GET'])
+def deleteTask():
+    global update
+    if 'logged_in' in session and session['logged_in']:
+        id = str(request.headers.get('id'))
+        datenBank.loescheAufgabenEintrag(id)
+        update = 1
+        return jsonify(1), 200
+    else:
+        return jsonify({'message': 'Unautorisierter Zugriff'}), 401
+
 
 
 @app.route('/api/addTask', methods=['GET'])
@@ -86,7 +97,6 @@ def alleTask():
         return jsonify(datenBank.aufgabenVonHeute()), 200
     else:
         return jsonify({'message': 'Unautorisierter Zugriff'}), 401
-
 
 
 @app.route('/api/aufgabeCheck', methods=['GET'])

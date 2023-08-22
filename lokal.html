@@ -25,6 +25,7 @@
             color: red;
         }
     </style>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> <!-- für websocket -->
     <script src="config.js"></script> <!-- in diesem skript wird der "secretKey gespeichert" -->
     <script>
@@ -58,26 +59,87 @@
             });
         }
 
-        function createListItem(index) {
-            const { id, color, title, description, checkt } = aufgabenListe[index];
+function createListItem(index) {
+    const { id, color, title, description, checkt } = aufgabenListe[index];
 
-            const li = document.createElement("li");
-            li.style.backgroundColor = color;
+    const li = document.createElement("li");
+    li.style.backgroundColor = color;
 
-            const strong = document.createElement("strong");
-            strong.textContent = title;
-            li.appendChild(strong);
+    const strong = document.createElement("strong");
+    strong.textContent = title;
+    li.appendChild(strong);
 
-            const p = document.createElement("p");
-            p.textContent = description;
-            li.appendChild(p);
+    const p = document.createElement("p");
+    p.textContent = description;
+    li.appendChild(p);
 
-            const button = document.createElement("button");
-            button.textContent = "Aktion ausführen";
-            button.addEventListener("click", () => handleButtonClick(index, li));
-            li.appendChild(button);
-            return li;
-        }
+    const button = document.createElement("button");
+    button.textContent = "Aktion ausführen";
+    button.addEventListener("click", () => handleButtonClick(index, li));
+    li.appendChild(button);
+
+    const extraButton = document.createElement("button");
+    extraButton.textContent = "Extra";
+    extraButton.classList.add("extra-button");
+    extraButton.addEventListener("click", () => showButtons(li));
+    li.appendChild(extraButton);
+
+    const actionButton1 = document.createElement("button");
+    actionButton1.textContent = "Aktion 1";
+    actionButton1.style.display = "none"; // Anfangs unsichtbar
+    li.appendChild(actionButton1);
+
+    const actionButton2 = document.createElement("button");
+    actionButton2.textContent = "Aktion 2";
+    actionButton2.style.display = "none"; // Anfangs unsichtbar
+    li.appendChild(actionButton2);
+
+    const cancelButton = document.createElement("button");
+    cancelButton.textContent = "Abbruch";
+    cancelButton.style.display = "none"; // Anfangs unsichtbar
+    cancelButton.addEventListener("click", () => hideButtons(li));
+    li.appendChild(cancelButton);
+
+    return li;
+}
+
+let openListItem = null;
+function showButtons(listItem) {
+    
+    if (openListItem && openListItem !== listItem) {
+        hideButtons(openListItem);
+    }    
+    openListItem = openListItem === listItem ? null : listItem;
+    
+    const elementsToHide = listItem.querySelectorAll("strong, p, button:not(.extra-button)");
+    elementsToHide.forEach(element => {
+        element.style.display = "none";
+    });
+
+    const actionButtonsToShow = listItem.querySelectorAll("button:nth-of-type(3), button:nth-of-type(4), button:nth-of-type(5)");
+    actionButtonsToShow.forEach(button => {
+        button.style.display = "block";
+    });
+
+    const extraButton = listItem.querySelector(".extra-button");
+    extraButton.style.display = "none";
+}
+
+function hideButtons(listItem) {
+    const elementsToShow = listItem.querySelectorAll("strong, p, button:not(.extra-button)");
+    elementsToShow.forEach(element => {
+        element.style.display = "block";
+    });
+
+    const actionButtonsToHide = listItem.querySelectorAll("button:nth-of-type(3), button:nth-of-type(4), button:nth-of-type(5)");
+    actionButtonsToHide.forEach(button => {
+        button.style.display = "none";
+    });
+
+    const extraButton = listItem.querySelector(".extra-button");
+    extraButton.style.display = "block";
+}
+
 
         function handleButtonClick(index, listItem) {
             const newChecktValue = aufgabenListe[index].checkt === 0 ? 1 : 0;
