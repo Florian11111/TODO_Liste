@@ -6,7 +6,6 @@ function neuLaden() {
     document.getElementById("taskListFertig").innerHTML = "";
     // kurzer time out so das man sieht dsa die seite wirklich neu geladen hat
     alleAufgaben();
-    
 }
 
 function alleAufgaben() {
@@ -40,33 +39,35 @@ function alleAufgaben() {
 function createListItem(index) {
     const { id, color, title, description, checkt } = aufgabenListe[index];
 
-    const outerDiv = document.createElement("div");
-    outerDiv.style.backgroundColor = color;
+    const listDiv1 = document.createElement("div");
+    listDiv1.classList.add("listDiv1");
+    listDiv1.style.backgroundColor = color;
 
     const titleStrong = document.createElement("strong");
     titleStrong.textContent = title;
-    outerDiv.appendChild(titleStrong);
+    listDiv1.appendChild(titleStrong);
 
     const descriptionP = document.createElement("p");
     descriptionP.textContent = description;
-    outerDiv.appendChild(descriptionP);
+    listDiv1.appendChild(descriptionP);
 
     const toggleButton = document.createElement("button");
     toggleButton.textContent = "Toggle";
-    outerDiv.appendChild(toggleButton);
+    listDiv1.appendChild(toggleButton);
 
     const abhackenButton = document.createElement("button");
     abhackenButton.textContent = "Abhacken";
     abhackenButton.addEventListener("click", () => abhackenKnopf(index));
-    outerDiv.appendChild(abhackenButton);
+    listDiv1.appendChild(abhackenButton);
 
-    const buttonDiv = document.createElement("div");
-    buttonDiv.style.display = "none"; // Start with inner div hidden
+    const listDiv2 = document.createElement("div");
+    listDiv2.classList.add("listDiv2");
+    listDiv2.style.display = "none"; // Start with inner div hidden
 
     const button2 = document.createElement("button");
     button2.textContent = "Löschen";
     button2.addEventListener("click", () => loeschenKnopf(index));
-    buttonDiv.appendChild(button2);
+    listDiv2.appendChild(button2);
 
     const datumDiv = document.createElement("div");
     const dateInput = document.createElement("input");
@@ -87,27 +88,28 @@ function createListItem(index) {
     });
     datumDiv.appendChild(verschiebenButton);
 
-    buttonDiv.appendChild(datumDiv);
+    listDiv2.appendChild(datumDiv);
 
     const toggleButton2 = document.createElement("button");
     toggleButton2.textContent = "Toggle";
-    buttonDiv.appendChild(toggleButton2);
+    listDiv2.appendChild(toggleButton2);
 
-    outerDiv.appendChild(buttonDiv);
+    listDiv1.appendChild(listDiv2);
 
     toggleButton.addEventListener("click", () => {
-        buttonDiv.style.display = "block";
-        outerDiv.style.display = "none";
+        listDiv2.style.display = "flex";
+        listDiv1.style.display = "none";
     });
 
     toggleButton2.addEventListener("click", () => {
-        buttonDiv.style.display = "none";
-        outerDiv.style.display = "block";
+        listDiv2.style.display = "none";
+        listDiv1.style.display = "flex";
     });
 
     const li = document.createElement("li");
-    li.appendChild(outerDiv);
-    li.appendChild(buttonDiv);
+    li.classList.add("listElement");
+    li.appendChild(listDiv1);
+    li.appendChild(listDiv2);
     return li;
 }
 
