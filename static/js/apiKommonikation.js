@@ -75,11 +75,15 @@ function createListItem(index) {
     dateInput.id = "date";
     dateInput.name = "date";
     dateInput.required = true;
-
+    
     const morgen = new Date();
-    morgen.setDate(morgen.getDate() + 1); 
-    dateInput.value  = morgen.toISOString().split('T')[0];
+    morgen.setDate(morgen.getDate() + 1);
+    
+    // Setzen Sie das Standarddatum auf morgen ohne Uhrzeit
+    dateInput.defaultValue = morgen.toISOString().split("T")[0];
+    
     datumDiv.appendChild(dateInput);
+
 
     const verschiebenButton = document.createElement("button");
     verschiebenButton.textContent = "Verschieben";
@@ -140,12 +144,14 @@ function neueAufgabe() {
 
 function datum_ersetzen(index, datum) {
     const heute = new Date();
+
     if (new Date(datum) >= heute) {
         console.log("datum gültig.");
     } else {
         console.log("datum ungültig.");
+        return;
     }
-
+    console.log(datum)
     fetch(apiUrl + '/api/moveTask', {
         method: 'GET',
         headers: {

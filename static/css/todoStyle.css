@@ -1,6 +1,6 @@
 body, html {
     height: 100%; /* Setzt die Höhe des gesamten Viewports auf 100% */
-    margin: 0; /* Entfernt den Standardrand des Body */
+    margin: 3vh; /* Entfernt den Standardrand des Body */
     padding: 0; /* Entfernt den Standard-Innenabstand des Body */
 }
 
@@ -54,10 +54,11 @@ ul {
 }
 
 li {
-width: 90%;
-height: 20vh; 
-display: flex;
-flex-direction: column;
+    margin-top: 10vh;
+    width: 90%;
+    height: 15vh; 
+    display: flex;
+    flex-direction: column;
 }
 
 
@@ -70,6 +71,29 @@ padding: 10px;
 border: 1px solid black;
 }
 
-.listDiv2 {
-display: none;
+.listDiv1 p {
+    color: rgb(232, 232, 232);
+    text-align: left;
+    margin-right: 10px; 
+    font-size: 1.85vh; 
+    font-family: Arial, sans-serif;
+    display: flex;
+    align-items: center;
+}
+
+.listDiv1 strong {
+    text-align: left;
+    font-size: 3vh; 
+    font-family: Arial, sans-serif;
+    margin-right: 10px; 
+    display: flex;
+    align-items: center;
+}
+
+.listDiv1 button {
+  text-align: right;
+}
+
+.listDiv1 button:last-child {
+  margin-left: auto;
 }

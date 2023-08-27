@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+import re
 
 datenBankpfad = "test.db"
 # Verbindung zur Datenbank herstellen oder eine neue erstellen
@@ -59,6 +60,8 @@ def loescheAufgabenEintrag(aufgabenEintrag_id):
     connection.commit()
 
 def datum_ersetzen(id, new_date):
+    if not re.match(r'\d{4}-\d{2}-\d{2}', new_date):
+        raise ValueError("das gegebene datum ist nicht im iso-format!")
     connection = sqlite3.connect(datenBankpfad)
     cursor = connection.cursor()
     cursor.execute("SELECT bisWann FROM aufgabenEintag WHERE id = ?", (id,))
@@ -146,7 +149,7 @@ def neueAufgabe(titel, beschreibung, aufgabenwiederhollung):
 
 # Erstellt eine aufgabe und ein dazugehörige Aufgabeneintrag
 def neueAufgabeUndEintrag(titel, beschreibung, farbe, bisWann):
-    print(bisWann)
+    
     if titel is None or beschreibung is None or farbe is None or bisWann is None:
         raise ValueError("Das Argument darf nicht None sein.")
     aufgaben_id = neueAufgabe(titel, beschreibung, 0)
