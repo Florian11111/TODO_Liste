@@ -1,8 +1,3 @@
-body, html {
-    height: 100%; /* Setzt die Höhe des gesamten Viewports auf 100% */
-    margin: 3vh; /* Entfernt den Standardrand des Body */
-    padding: 0; /* Entfernt den Standard-Innenabstand des Body */
-}
 
 .task-list1 {
     color: white;
@@ -46,16 +41,18 @@ body, html {
 ul {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    padding: 0;
+    gap: 0;
+    padding-top: 60px;
+    padding-left: 10vh;
+    padding-right: 10vh;
     margin: 0;
     list-style: none;
 }
 
 li {
-    margin-top: 10vh;
-    width: 90%;
-    height: 15vh; 
+    width: 100%;
+    margin-top: 2vh;
+    height: 10vh; 
     display: flex;
     flex-direction: column;
 }
@@ -65,38 +62,35 @@ li {
     flex: 1; 
     display: flex;
     flex-direction: row;
-    padding: 10px;
     border: 1px solid black;
 }
 
-.listDiv1 p {
-    color: rgb(232, 232, 232);
-    text-align: left;
-    margin-right: 10px; 
-    font-size: 1.85vh; 
-    font-family: Arial, sans-serif;
-    display: flex;
-    align-items: center;
-}
 
 .listDiv1 strong {
     text-align: left;
     font-size: 3vh; 
     font-family: Arial, sans-serif;
-    margin-right: 10px; 
+    margin-left: 10px; 
     display: flex;
     align-items: center;
 }
 
-.buttons {
+.listDiv1 button {
+    /* Dein vorhandenes Button-Styling */
     display: flex;
     flex-direction: row; /* Die Standardausrichtung ist bereits "row", du kannst das hier weglassen */
     align-items: center; /* Zentriert die Elemente vertikal */
     justify-content: flex-end; /* Verschiebt die Knöpfe nach rechts */
+    flex: none;
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
-.listDiv1 button {
-    /* Dein vorhandenes Button-Styling */
-    flex: none;
-    margin-right: 10px;
+.buttonContainer {
+    display: flex;
+    align-items: center;
+    margin-left: auto; 
+    margin-right: 0;
+    align-items: center;
 }
