@@ -13,11 +13,10 @@ toggleKnopf.addEventListener("click", () => {
 function auswaehlen() {
   // Zugriff auf die Formularelemente
   var title = document.getElementById("title").value;
-  var beschreibung = document.getElementById("beschreibung").value;
   var date = document.getElementById("date").value;
   var color = document.getElementById("color").value;
   
-  // wenn alle != null dann neue aufgabe erstellen. => wenn erfolgreich => datum auf heute, farbe auf rot, titel und beschreibung leeren
+  // wenn alle != null dann neue aufgabe erstellen. => wenn erfolgreich => datum auf heute, farbe auf rot, titel
   if (title === "" || date == "" || color == "") {
     document.getElementById("error").innerHTML = "bitte fülle alle datum und titel aus\n";
   } else {
@@ -26,7 +25,6 @@ function auswaehlen() {
       method: 'GET',
       headers: {
           'titel': title,
-          'beschreibung': beschreibung,
           'farbe': color,
           'datum': date,
       }
@@ -38,7 +36,6 @@ function auswaehlen() {
         datumHeute();
         syncColor();
         document.getElementById("title").value = "";
-        document.getElementById("beschreibung").value = "";
         meinDiv.style.display = "none";  
         alleAufgaben();
       }

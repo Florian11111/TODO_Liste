@@ -90,10 +90,9 @@ def addTask():
     global update
     if 'logged_in' in session and session['logged_in']:
         titel = str(request.headers.get('titel'))
-        beschreibung = str(request.headers.get('beschreibung'))
         farbe = str(request.headers.get('farbe'))
         datum = str(request.headers.get('datum'))
-        datenBank.neueAufgabeUndEintrag(titel, beschreibung, farbe, datum)
+        datenBank.neueAufgabeUndEintrag(titel, farbe, datum)
         update = 1
         return jsonify(1), 200
     else:

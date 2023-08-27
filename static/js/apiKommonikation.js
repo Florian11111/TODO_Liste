@@ -37,7 +37,7 @@ function alleAufgaben() {
 
 
 function createListItem(index) {
-    const { id, color, title, description, checkt } = aufgabenListe[index];
+    const { id, color, title, checkt } = aufgabenListe[index];
 
     const listDiv1 = document.createElement("div");
     listDiv1.classList.add("listDiv1");
@@ -47,18 +47,20 @@ function createListItem(index) {
     titleStrong.textContent = title;
     listDiv1.appendChild(titleStrong);
 
-    const descriptionP = document.createElement("p");
-    descriptionP.textContent = description;
-    listDiv1.appendChild(descriptionP);
-
     const toggleButton = document.createElement("button");
     toggleButton.textContent = "Toggle";
-    listDiv1.appendChild(toggleButton);
 
     const abhackenButton = document.createElement("button");
     abhackenButton.textContent = "Abhacken";
     abhackenButton.addEventListener("click", () => abhackenKnopf(index));
-    listDiv1.appendChild(abhackenButton);
+
+    const buttonContainer = document.createElement("div");
+    buttonContainer.classList.add("buttonContainer"); // Füge die CSS-Klasse für Flex-Layout hinzu
+    buttonContainer.appendChild(toggleButton);
+    buttonContainer.appendChild(abhackenButton);
+
+    listDiv1.appendChild(buttonContainer);
+
 
     const listDiv2 = document.createElement("div");
     listDiv2.classList.add("listDiv2");

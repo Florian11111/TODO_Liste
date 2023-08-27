@@ -14,7 +14,6 @@ cursor.execute("""
     CREATE TABLE IF NOT EXISTS aufgabe (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         titel TEXT NOT NULL,
-        beschreibung TEXT,
         wiederholl INTEGER
     )
 """)
@@ -98,7 +97,6 @@ def aufgabenVonHeute():
         'id': x[0],
         'color': x[1],
         'title': aufgabe[1],
-        'description': aufgabe[2],
         'checkt': x[4]
         }
         temp.append(formatted_item)
@@ -135,24 +133,24 @@ def getAufgabenEintag(id):
 
 
 # Erstelle aufgabe, gibt die id zurück
-def neueAufgabe(titel, beschreibung, aufgabenwiederhollung):
+def neueAufgabe(titel, aufgabenwiederhollung):
     conn = sqlite3.connect(datenBankpfad)
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO aufgabe (titel, beschreibung, wiederholl)
-        VALUES (?, ?, ?)
-    """, (titel, beschreibung, aufgabenwiederhollung))
+        INSERT INTO aufgabe (titel, wiederholl)
+        VALUES (?, ?)
+    """, (titel, aufgabenwiederhollung))
     conn.commit()
     aufgaben_id = cursor.lastrowid
     conn.close()
     return aufgaben_id
 
 # Erstellt eine aufgabe und ein dazugehörige Aufgabeneintrag
-def neueAufgabeUndEintrag(titel, beschreibung, farbe, bisWann):
+def neueAufgabeUndEintrag(titel, farbe, bisWann):
     
-    if titel is None or beschreibung is None or farbe is None or bisWann is None:
+    if titel is None or farbe is None or bisWann is None:
         raise ValueError("Das Argument darf nicht None sein.")
-    aufgaben_id = neueAufgabe(titel, beschreibung, 0)
+    aufgaben_id = neueAufgabe(titel, 0)
     conn = sqlite3.connect(datenBankpfad)
     cursor = conn.cursor()
     cursor.execute("""
