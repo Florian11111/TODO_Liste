@@ -41,7 +41,11 @@ function createListItem(index) {
 
     const listDiv1 = document.createElement("div");
     listDiv1.classList.add("listDiv1");
-    listDiv1.style.backgroundColor = color;
+    if (!checkt) {
+        listDiv1.style.backgroundColor = color;
+    } else {
+        listDiv1.style.backgroundColor = "#555555";
+    }
 
     const titleStrong = document.createElement("strong");
     titleStrong.textContent = title;
@@ -56,7 +60,9 @@ function createListItem(index) {
 
     const buttonContainer = document.createElement("div");
     buttonContainer.classList.add("buttonContainer"); // Füge die CSS-Klasse für Flex-Layout hinzu
-    buttonContainer.appendChild(toggleButton);
+    if (!checkt) {
+        buttonContainer.appendChild(toggleButton);
+    }
     buttonContainer.appendChild(abhackenButton);
 
     listDiv1.appendChild(buttonContainer);

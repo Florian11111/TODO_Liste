@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, disconnect
 import json
+import time
 import threading
 # eigene imports
 import datenBank
@@ -17,7 +18,7 @@ app.secret_key = config["secret_key"]
 SECRET_TOKEN = config["secret_token"]
 users = config["users"]
 # wenn eine änderung verhanden ist update = 1
-update = 0
+update = 2
 valid_token = '123' 
 
 
@@ -140,7 +141,9 @@ def handle_connect():
 def updateAenderung():
     global update
     while True:
-        if update == 1:
+        if update > 0:
+            if update == 1:
+                time.sleep(6)
             socketio.emit('update', 1)
             update = 0
             print("Gesendet!")

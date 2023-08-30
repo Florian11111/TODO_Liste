@@ -1,12 +1,13 @@
-
 .task-list1 {
     color: white;
     padding: auto;
 }
 .task-list2 {
+    
+    padding: auto;
     color: black;
-    background-color: gray;
 }
+
 #meinDiv {
     position: fixed;
     left: 50%;
@@ -38,16 +39,19 @@
     gap: 10px;
 }
 
-ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0;
+.task-list1 {
     padding-top: 60px;
+}
+
+ul {
     padding-left: 10vh;
     padding-right: 10vh;
-    margin: 0;
+    margin: 0 auto; /* Zentriert die Liste horizontal */
     list-style: none;
+    max-width: 1000px; /* Die maximale Breite der Liste */
 }
+
+
 
 li {
     width: 100%;

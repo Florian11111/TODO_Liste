@@ -8,8 +8,8 @@ def farbeZufall():
     return "#{:02x}{:02x}{:02x}".format(r, g, b)
 
 # ISO-Format Datum
-datum = "2023-08-27"
-datum2 = "2023-08-27"
+datum = "2023-08-30"
+datum2 = "2023-08-30"
 
 anzahl_daten = 6
 for x in range(anzahl_daten):
