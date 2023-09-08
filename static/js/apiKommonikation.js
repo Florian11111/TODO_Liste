@@ -125,30 +125,45 @@ function createListItem(index) {
     return li;
 }
 
-/*
-function neueAufgabe() {
-    fetch(apiUrl + '/api/addTask', {
+function findIndex(searchID) {
+    for (let index = 0; index < aufgabenListe.length; index++) {  
+        if (aufgabenListe[index].id == searchID) {
+            return index; // ID gefunden, Index speichern und Methode beenden
+        }
+    }
+    console.error("ID Nichts gefunden.");
+    return -1;
+}
+
+function update_task(id) {
+    index = findIndex(id)
+    if (index == -1) {
+        return;
+    }
+    fetch(apiUrl + '/api/singleTask', {
         method: 'GET',
         headers: {
-            
-            titel = request.headers.get('titel')
-            beschreibung = request.headers.get('beschreibung')
-            farbe = request.headers.get('farbe')
-            datum = request.headers.get('datum')
-            
+            'Authorization': '',
+            'id': aufgabenListe[index].id,
         }
     })
     .then(response => response.json())
     .then(antwort => {  
-        aufgabenListe[index].checkt = antwort.aktuallisiert;
+        if (aufgabenListe[index].checkt === 0) {
+            removeListItemFromList(index, taskList)
+        } else {
+            removeListItemFromList(index, taskListFertig)
+        }
+        console.log(antwort);
+        aufgabenListe[index] = antwort;
         updateAlleAufgaben();
     })
     .catch(error => {
         document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
-        updateAlleAufgaben();
     });
-} 
-*/
+    
+    aufgabenListe
+}
 
 function datum_ersetzen(index, datum) {
     const heute = new Date();
@@ -218,7 +233,7 @@ function abhackenKnopf(index) {
         removeListItemFromList(index, taskListFertig)
     }
 
-    fetch(apiUrl + '/api/aufgabeCheck', {
+    fetch(apiUrl + '/api/checkTask', {
         method: 'GET',
         headers: {
             'Authorization': '',
@@ -271,12 +286,25 @@ function connectToSocket() {
         console.log('WebSocket connected');
     });
 
-    socket.on('update', function(state) {
+    socket.on('update_all', function(state) {
         if (state == 1) {
-            console.log("update!")
+            console.log("update all!")
             alleAufgaben(); // updatet alle Aufgaben
         }
     });
+
+    socket.on('update_taks', function(id) {
+        console.log("update ID: " + id + "!");
+        update_task(id); 
+    });
+
+    socket.on('delete_taks', function(id) {
+        console.log("deletes ID: " + id + "!") + " (not implementet)";
+        // update_task(id); 
+    
+    });
+    
+
     socket.on('invalid_token', function() {
         console.log('Invalid token. Closing WebSocket connection.');
         socket.close();

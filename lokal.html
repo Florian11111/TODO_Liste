@@ -32,11 +32,18 @@
         // speichert alle tasks
         let aufgabenListe = [];
 
+        function neuLaden() {
+            document.getElementById("taskList").innerHTML = "";
+            document.getElementById("taskListFertig").innerHTML = "";
+            // kurzer time out so das man sieht dsa die seite wirklich neu geladen hat
+            alleAufgaben();
+        }
+
         function alleAufgaben() {
             fetch(apiUrl + '/api/alleTask', {
                 method: 'GET',
                 headers: {
-                    'Authorization': 'Bearer ' + secretKey
+                    'Authorization': 'Bearer ' + secretKey,
                 }
             })
             .then(response => response.json())
@@ -59,89 +66,196 @@
             });
         }
 
-function createListItem(index) {
-    const { id, color, title, description, checkt } = aufgabenListe[index];
 
-    const li = document.createElement("li");
-    li.style.backgroundColor = color;
+        function createListItem(index) {
+            const { id, color, title, checkt } = aufgabenListe[index];
 
-    const strong = document.createElement("strong");
-    strong.textContent = title;
-    li.appendChild(strong);
+            const listDiv1 = document.createElement("div");
+            listDiv1.classList.add("listDiv1");
+            if (!checkt) {
+                listDiv1.style.backgroundColor = color;
+            } else {
+                listDiv1.style.backgroundColor = "#555555";
+            }
 
-    const p = document.createElement("p");
-    p.textContent = description;
-    li.appendChild(p);
+            const titleStrong = document.createElement("strong");
+            titleStrong.textContent = title;
+            listDiv1.appendChild(titleStrong);
 
-    const button = document.createElement("button");
-    button.textContent = "Aktion ausführen";
-    button.addEventListener("click", () => handleButtonClick(index, li));
-    li.appendChild(button);
+            const toggleButton = document.createElement("button");
+            toggleButton.textContent = "Toggle";
 
-    const extraButton = document.createElement("button");
-    extraButton.textContent = "Extra";
-    extraButton.classList.add("extra-button");
-    extraButton.addEventListener("click", () => showButtons(li));
-    li.appendChild(extraButton);
+            const abhackenButton = document.createElement("button");
+            abhackenButton.textContent = "Abhacken";
+            abhackenButton.addEventListener("click", () => abhackenKnopf(index));
 
-    const actionButton1 = document.createElement("button");
-    actionButton1.textContent = "Aktion 1";
-    actionButton1.style.display = "none"; // Anfangs unsichtbar
-    li.appendChild(actionButton1);
+            const buttonContainer = document.createElement("div");
+            buttonContainer.classList.add("buttonContainer"); // Füge die CSS-Klasse für Flex-Layout hinzu
+            if (!checkt) {
+                buttonContainer.appendChild(toggleButton);
+            }
+            buttonContainer.appendChild(abhackenButton);
 
-    const actionButton2 = document.createElement("button");
-    actionButton2.textContent = "Aktion 2";
-    actionButton2.style.display = "none"; // Anfangs unsichtbar
-    li.appendChild(actionButton2);
-
-    const cancelButton = document.createElement("button");
-    cancelButton.textContent = "Abbruch";
-    cancelButton.style.display = "none"; // Anfangs unsichtbar
-    cancelButton.addEventListener("click", () => hideButtons(li));
-    li.appendChild(cancelButton);
-
-    return li;
-}
-
-let openListItem = null;
-function showButtons(listItem) {
-    
-    if (openListItem && openListItem !== listItem) {
-        hideButtons(openListItem);
-    }    
-    openListItem = openListItem === listItem ? null : listItem;
-    
-    const elementsToHide = listItem.querySelectorAll("strong, p, button:not(.extra-button)");
-    elementsToHide.forEach(element => {
-        element.style.display = "none";
-    });
-
-    const actionButtonsToShow = listItem.querySelectorAll("button:nth-of-type(3), button:nth-of-type(4), button:nth-of-type(5)");
-    actionButtonsToShow.forEach(button => {
-        button.style.display = "block";
-    });
-
-    const extraButton = listItem.querySelector(".extra-button");
-    extraButton.style.display = "none";
-}
-
-function hideButtons(listItem) {
-    const elementsToShow = listItem.querySelectorAll("strong, p, button:not(.extra-button)");
-    elementsToShow.forEach(element => {
-        element.style.display = "block";
-    });
-
-    const actionButtonsToHide = listItem.querySelectorAll("button:nth-of-type(3), button:nth-of-type(4), button:nth-of-type(5)");
-    actionButtonsToHide.forEach(button => {
-        button.style.display = "none";
-    });
-
-    const extraButton = listItem.querySelector(".extra-button");
-    extraButton.style.display = "block";
-}
+            listDiv1.appendChild(buttonContainer);
 
 
-        function handleButtonClick(index, listItem) {
+            const listDiv2 = document.createElement("div");
+            listDiv2.classList.add("listDiv2");
+            listDiv2.style.display = "none"; // Start with inner div hidden
+
+            const button2 = document.createElement("button");
+            button2.textContent = "Löschen";
+            button2.addEventListener("click", () => loeschenKnopf(index));
+            listDiv2.appendChild(button2);
+
+            const datumDiv = document.createElement("div");
+            const dateInput = document.createElement("input");
+            dateInput.type = "date";
+            dateInput.id = "date";
+            dateInput.name = "date";
+            dateInput.required = true;
+            
+            const morgen = new Date();
+            morgen.setDate(morgen.getDate() + 1);
+            
+            // Setzen Sie das Standarddatum auf morgen ohne Uhrzeit
+            dateInput.defaultValue = morgen.toISOString().split("T")[0];
+            
+            datumDiv.appendChild(dateInput);
+
+
+            const verschiebenButton = document.createElement("button");
+            verschiebenButton.textContent = "Verschieben";
+            verschiebenButton.addEventListener("click", () => {
+                datum_ersetzen(index, dateInput.value);
+            });
+            datumDiv.appendChild(verschiebenButton);
+
+            listDiv2.appendChild(datumDiv);
+
+            const toggleButton2 = document.createElement("button");
+            toggleButton2.textContent = "Toggle";
+            listDiv2.appendChild(toggleButton2);
+
+            listDiv1.appendChild(listDiv2);
+
+            toggleButton.addEventListener("click", () => {
+                listDiv2.style.display = "flex";
+                listDiv1.style.display = "none";
+            });
+
+            toggleButton2.addEventListener("click", () => {
+                listDiv2.style.display = "none";
+                listDiv1.style.display = "flex";
+            });
+
+            const li = document.createElement("li");
+            li.classList.add("listElement");
+            li.appendChild(listDiv1);
+            li.appendChild(listDiv2);
+            return li;
+        }
+
+        function findIndex(searchID) {
+            for (let index = 0; index < aufgabenListe.length; index++) {  
+                if (aufgabenListe[index].id == searchID) {
+                    return index; // ID gefunden, Index speichern und Methode beenden
+                }
+            }
+            console.error("ID Nichts gefunden.");
+            return -1;
+        }
+
+        function update_task(id) {
+            index = findIndex(id)
+            if (index == -1) {
+                return;
+            }
+            fetch(apiUrl + '/api/singleTask', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + secretKey,
+                    'id': aufgabenListe[index].id,
+                }
+            })
+            .then(response => response.json())
+            .then(antwort => {  
+                if (aufgabenListe[index].checkt === 0) {
+                    removeListItemFromList(index, taskList)
+                } else {
+                    removeListItemFromList(index, taskListFertig)
+                }
+                aufgabenListe[index] = antwort;
+                updateAlleAufgaben();
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
+            });
+            
+            aufgabenListe
+        }
+
+        function datum_ersetzen(index, datum) {
+            const heute = new Date();
+
+            if (new Date(datum) >= heute) {
+                console.log("datum gültig.");
+            } else {
+                console.log("datum ungültig.");
+                return;
+            }
+            console.log(datum)
+            fetch(apiUrl + '/api/moveTask', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + secretKey,
+                    'id': aufgabenListe[index].id,
+                    'datum': datum
+                }
+            })
+            .then(response => response.json())
+            .then(antwort => {  
+                if (antwort === 1) {
+                    if (aufgabenListe[index].checkt === 0) {
+                        removeListItemFromList(index, taskList)
+                    } else {
+                        removeListItemFromList(index, taskListFertig)
+                    }
+                } else {
+                    console.log("Fehler bei löschen einer Aufgabe!")
+                }
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
+            });
+        }
+
+        function loeschenKnopf(index) {
+            fetch(apiUrl + '/api/deleteTask', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + secretKey,
+                    'id': aufgabenListe[index].id
+                }
+            })
+            .then(response => response.json())
+            .then(antwort => {  
+                if (antwort === 1) {
+                    if (aufgabenListe[index].checkt === 0) {
+                        removeListItemFromList(index, taskList)
+                    } else {
+                        removeListItemFromList(index, taskListFertig)
+                    }
+                } else {
+                    console.log("Fehler bei löschen einer Aufgabe!")
+                }
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = 'Fehler beim Abrufen der Daten.';
+            });
+        }
+
+        function abhackenKnopf(index) {
             const newChecktValue = aufgabenListe[index].checkt === 0 ? 1 : 0;
             if (aufgabenListe[index].checkt === 0) {
                 removeListItemFromList(index, taskList)
@@ -149,7 +263,7 @@ function hideButtons(listItem) {
                 removeListItemFromList(index, taskListFertig)
             }
 
-            fetch(apiUrl + '/api/aufgabeCheck', {
+            fetch(apiUrl + '/api/checkTask', {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Bearer ' + secretKey,
@@ -193,7 +307,6 @@ function hideButtons(listItem) {
         }
 
         var socket;
-        
         function connectToSocket() {
             socket = io.connect(apiUrl, {
                 query: { token: validToken }
@@ -203,25 +316,24 @@ function hideButtons(listItem) {
                 console.log('WebSocket connected');
             });
 
-            socket.on('update', function(state) {
+            socket.on('update_all', function(state) {
                 if (state == 1) {
-                    console.log("update!")
+                    console.log("update all!")
                     alleAufgaben(); // updatet alle Aufgaben
                 }
             });
 
-            /*
-            socket.on('message', function(message) {
-                console.log(message)
-                document.getElementById('output').innerHTML = '<p>' + message + '</p>';
+            socket.on('update_taks', function(id) {
+                console.log("update ID: " + id + "!");
+                update_task(id); 
             });
 
-            // Listen for the 'update_notification' event
-            socket.on('update_notification', function(data) {
-                console.log('Update notification received:', data.message);
-                document.getElementById('output').innerHTML = '<p>Update available: ' + data.message + '</p>';
+            socket.on('delete_taks', function(id) {
+                console.log("deletes ID: " + id + "!") + " (not implementet)";
+                // update_task(id); 
+            
             });
-            */
+
             socket.on('invalid_token', function() {
                 console.log('Invalid token. Closing WebSocket connection.');
                 socket.close();

@@ -95,13 +95,12 @@ def aufgabenVonHeute():
         aufgabe = getAufgabe(x[5])
         formatted_item = {
         'id': x[0],
-        'color': x[1],
+        'color': x[1],#
         'title': aufgabe[1],
         'checkt': x[4]
         }
         temp.append(formatted_item)
     return temp
-
 
 # returnt die Aufgabe mit der id, wenn id nicht gefunen -1
 def getAufgabe(id):
@@ -131,7 +130,6 @@ def getAufgabenEintag(id):
     else:
         return aufgabeneintag
 
-
 # Erstelle aufgabe, gibt die id zurück
 def neueAufgabe(titel, aufgabenwiederhollung):
     conn = sqlite3.connect(datenBankpfad)
@@ -147,7 +145,6 @@ def neueAufgabe(titel, aufgabenwiederhollung):
 
 # Erstellt eine aufgabe und ein dazugehörige Aufgabeneintrag
 def neueAufgabeUndEintrag(titel, farbe, bisWann):
-    
     if titel is None or farbe is None or bisWann is None:
         raise ValueError("Das Argument darf nicht None sein.")
     aufgaben_id = neueAufgabe(titel, 0)
@@ -166,7 +163,7 @@ TODO: Wird aufgerufen wenn ein eintrag abgehackt wird.
 Wenn es ein Aufgaben eintrag mit der id gibt wird dieser aktualliesiert, Außerdem wird
 das erlegigt datum gespeichert / gelöscht
 und der neue Status zurückgebenen wenn es die id nicht gibt -1 
-'''
+''' 
 def aktuelle(id, aktuellerStatus):
     connection = sqlite3.connect(datenBankpfad)
     cursor = connection.cursor()
@@ -187,3 +184,14 @@ def aktuelle(id, aktuellerStatus):
     connection.close()
     return returnTemp
 
+def getFormatierteAufgabe(id):
+    tempaufgabe = getAufgabenEintag(id)
+    if tempaufgabe == -1:
+        return -1
+    aufgabe = getAufgabe(tempaufgabe[5])
+    return {
+    'id': tempaufgabe[0],
+    'color': tempaufgabe[1],
+    'title': aufgabe[1],
+    'checkt': tempaufgabe[4]
+    }

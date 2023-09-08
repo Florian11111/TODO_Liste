@@ -46,12 +46,10 @@
 ul {
     padding-left: 10vh;
     padding-right: 10vh;
-    margin: 0 auto; /* Zentriert die Liste horizontal */
+    margin: 0 auto; 
     list-style: none;
-    max-width: 1000px; /* Die maximale Breite der Liste */
+    max-width: 1000px; 
 }
-
-
 
 li {
     width: 100%;
@@ -69,7 +67,6 @@ li {
     border: 1px solid black;
 }
 
-
 .listDiv1 strong {
     text-align: left;
     font-size: 3vh; 
@@ -80,11 +77,10 @@ li {
 }
 
 .listDiv1 button {
-    /* Dein vorhandenes Button-Styling */
     display: flex;
-    flex-direction: row; /* Die Standardausrichtung ist bereits "row", du kannst das hier weglassen */
-    align-items: center; /* Zentriert die Elemente vertikal */
-    justify-content: flex-end; /* Verschiebt die Knöpfe nach rechts */
+    flex-direction: row; 
+    align-items: center; 
+    justify-content: flex-end;
     flex: none;
     display: inline-block;
     margin-left: 10px;
