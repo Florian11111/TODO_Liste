@@ -54,7 +54,6 @@ def page_not_found(e):
         return redirect(url_for('login'))
 
 # REST API TEIL --------------------------------------------------------------
-
 @app.route('/api/moveTask', methods=['GET'])
 def move_Task():
     if 'logged_in' in session and session['logged_in']:
@@ -89,6 +88,7 @@ def add_Task():
         return jsonify(1), 200
     else:
         return jsonify({'message': 'Unautorisierter Zugriff'}), 401
+
 
 @app.route('/api/alleTask', methods=['GET'])
 def alle_Task():

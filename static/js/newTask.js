@@ -1,12 +1,12 @@
 const toggleKnopf = document.getElementById("toggleKnopf");
-const meinDiv = document.getElementById("meinDiv");
+const newElementDiv = document.getElementById("newElementDiv");
 
 toggleKnopf.addEventListener("click", () => {
   document.getElementById("error").innerHTML = "";
-  if (meinDiv.style.display === "none") {
-      meinDiv.style.display = "block"; //
+  if (newElementDiv.style.display === "block") {
+      newElementDiv.style.display = "none"; //
   } else {
-      meinDiv.style.display = "none";  
+      newElementDiv.style.display = "block";  
   }
 });
 
@@ -36,7 +36,7 @@ function auswaehlen() {
         datumHeute();
         syncColor();
         document.getElementById("title").value = "";
-        meinDiv.style.display = "none";  
+        newElementDiv.style.display = "none";  
         alleAufgaben();
       }
   })

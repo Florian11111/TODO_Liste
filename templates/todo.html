@@ -8,7 +8,7 @@
     <div class="top-bar">
         <div>TODO Aufgaben heute</div>
         <div class="buttons">
-            <button onclick="neuLaden()">Reload</button>
+            <button onclick="listReload()">Reload</button>
             <button id="toggleKnopf">Neue Aufgabe erstellen</button>
         </div>
     </div>
@@ -22,7 +22,7 @@
         <!-- The tasks will be added dynamically using JavaScript -->
     </ul>
     
-    <div id="meinDiv">
+    <div id="newElementDiv">
         <h2>Neue Aufgabe erstellen</h2>
         <label id="error"></label><br>
         <label for="title">Titel:</label>
@@ -51,11 +51,13 @@
         <button onclick="auswaehlen()">Auswählen</button>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> <!-- für websocket -->
-    <script src="/static/js/neueAufgabe.js"></script>
-    <script src="/static/js/apiKommonikation.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script> <!-- for websocket bib --> 
+    <script src="/static/js/listenElementInit.js"></script> <!-- creates a new list element --> 
+    <script src="/static/js/websocket.js"></script> <!-- websocket implementaion --> 
+    <script src="/static/js/newTask.js"></script> <!-- creates a new Task --> 
+    <script src="/static/js/ManageList.js"></script> <!-- Manages the list --> 
     <script>
-        // bei starten
+        // on start
         var apiUrl = "{{ request.url_root }}";
         connectToSocket();
         alleAufgaben();
